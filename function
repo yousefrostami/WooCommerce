@@ -1,0 +1,61 @@
+// جلوگیری از خطاهای المنتور 
+// Prevent Elementor from connecting to my.elementor.com
+add_filter('elementor/connect/additional-connect-info', '__return_empty_array');
+add_filter('elementor/connect/connect-url', '__return_empty_string');
+add_filter('elementor/connect/remote-info-data', '__return_empty_array');
+
+// Handle the base-app.php errors by providing default values
+add_filter('elementor/connect/apps/get_client_data', function($client_data) {
+    if (is_wp_error($client_data)) {
+        return [
+            'client_id' => '',
+            'auth_secret' => '',
+            'redirect_uri' => '',
+            'callback' => '',
+            'admin_notice' => '',
+        ];
+    }
+    return $client_data;
+}, 10, 1);
+
+// Prevent connection attempts entirely without showing error
+add_filter('pre_http_request', function($pre, $parsed_args, $url) {
+    if (strpos($url, 'my.elementor.com') !== false) {
+        // Return a valid response to avoid the error
+        return [
+            'body' => '',
+            'response' => [
+                'code' => 200,
+            ],
+            'headers' => [],
+            'cookies' => [],
+        ];
+    }
+    return $pre;
+}, 10, 3);
+
+// Disable Elementor Connect Library
+add_action('elementor/init', function() {
+    if (class_exists('\Elementor\Core\Common\Modules\Connect\Module')) {
+        remove_action('elementor/editor/before_enqueue_scripts', [
+            \Elementor\Core\Common\Modules\Connect\Module::class,
+            'enqueue_connect_scripts'
+        ]);
+    }
+});
+
+// Remove Connect menu item
+add_action('admin_menu', function() {
+    remove_submenu_page('elementor', 'elementor-connect');
+}, 99);
+
+// Disable library sync
+add_filter('elementor/api/get_templates/body_args', '__return_empty_array');
+
+// Prevent 404 errors on API routes
+add_filter('elementor/api/get_info_data', '__return_empty_array');
+
+// Suppress specific WP_Error notices
+add_action('init', function() {
+    remove_action('admin_notices', [\Elementor\Core\Common\Modules\Connect\Module::class, 'admin_notice']);
+});
