@@ -1,0 +1,20 @@
+/*LiamWP*/
+.outofstock{
+    filter: grayscale(1);
+}
+.outofstock::after {
+    content: 'ناموجود';
+    background: #f44336;
+    position: absolute;
+    top: 16px;
+    color: #fff;
+    padding: 6px 15px;
+    border-radius: 8px;
+    right: 16px;
+}
+
+.outofstock .woocommerce-Price-amount {
+    filter: blur(5px); 
+}
+
+/*Yousef Rostami*/
