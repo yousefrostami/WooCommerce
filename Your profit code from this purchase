@@ -1,0 +1,23 @@
+کد پست سود شما از این خرید
+
+
+add_action( 'woocommerce_cart_totals_after_order_total', 'idcwoo_show_total_discount_cart_checkout', 9999 );
+add_action( 'woocommerce_review_order_after_order_total', 'idcwoo_show_total_discount_cart_checkout', 9999 );
+ 
+function idcwoo_show_total_discount_cart_checkout() {
+    
+   $discount_total = 0;
+    
+   foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {         
+      $product = $values['data'];
+      if ( $product->is_on_sale() ) {
+         $regular_price = $product->get_regular_price();
+         $sale_price = $product->get_sale_price();
+         $discount = ( $regular_price - $sale_price ) * $values['quantity'];
+         $discount_total += $discount;
+      }
+   }
+             
+    if ( $discount_total > 0 ) {
+      echo '<tr><th>سود شما از این خرید</th><td data-title="سود شما ازین خرید:">' . wc_price( $discount_total + WC()->cart->get_discount_total() ) .'</td></tr>';
+    }}
