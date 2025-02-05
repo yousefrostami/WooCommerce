@@ -1,4 +1,5 @@
 /*LiamWP*/
+// تغییر دموی نمایش محصولات ناموجود
 .outofstock{
     filter: grayscale(1);
 }
