@@ -1,0 +1,29 @@
+//  حذف خودکار سفارشات لغو شده،درحال پردازش،و... بعد از مدت زمان مشخص
+
+
+// Schedule the task to run every 24 hours
+add_action('wp', 'schedule_delete_expired_orders');
+function schedule_delete_expired_orders() {
+    if (!wp_next_scheduled('delete_expired_orders')) {
+        wp_schedule_event(time(), 'daily', 'delete_expired_orders');
+    }
+}
+
+// Function to delete expired orders
+add_action('delete_expired_orders', 'delete_expired_orders_callback');
+function delete_expired_orders_callback() {
+    // Set the status and timeout period for orders to be deleted
+    $status = 'cancelled'; // or 'failed', 'on-hold', etc.
+    $timeout_period = 7; // days
+
+    // Get orders with the specified status and older than the timeout period
+    $orders = wc_get_orders(array(
+        'status' => $status,
+        'date_created' => '<' . date('Y-m-d', strtotime('-' . $timeout_period . ' days')),
+    ));
+
+    // Delete the orders
+    foreach ($orders as $order) {
+        wp_delete_post($order->get_id(), true);
+    }
+}
