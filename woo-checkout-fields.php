@@ -1,7 +1,7 @@
 <?php
 // حذف فیلد کمپانی، ایمیل، کدپستی، آدرس 2
-function liamWp_remove_specific_checkout_fields( $fields ) {
 
+function liamWp_remove_specific_checkout_fields( $fields ) {
     // Billing fields
     unset( $fields['billing']['billing_company'] );
     unset( $fields['billing']['billing_email'] );
